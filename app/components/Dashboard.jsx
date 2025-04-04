@@ -8,6 +8,8 @@ import {
   OptionList,
   Layout,
   Text,
+  Toast, // Add this import
+  Frame, // Add this import
 } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
 import {
@@ -16,43 +18,27 @@ import {
   getSelectedProducts,
 } from "../helpers/utils";
 
-export default function Dashboard({ onLogout }) {
-  const [pages, setPages] = useState([]);
-  const [products, setProducts] = useState([]);
+export default function Dashboard({ onLogout, pages, products }) {
   const [selectedPages, setSelectedPages] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [allPagesSelected, setAllPagesSelected] = useState(false);
   const [allProductsSelected, setAllProductsSelected] = useState(false);
 
+  // Add state for toast
+  const [toastActive, setToastActive] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Function to toggle toast
+  const toggleToast = (message) => {
+    setToastMessage(message);
+    setToastActive(true);
+  };
+
   // Fetch pages and products from Shopify store
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const host = params.get("host");
-    const shop = params.get("shop");
-
-    if (!host || !shop) {
-      console.warn(
-        "Missing host or shop parameter, app may not be properly embedded",
-      );
-    }
-
-    const authToken = getAuthToken();
-    if (!authToken) {
-      window.location.href = "/login";
-    }
-    // Mock data for testing
-    setPages([
-      { id: "1", title: "Home Page" },
-      { id: "2", title: "About Us" },
-      { id: "3", title: "Contact" },
-      // ... other pages
-    ]);
-
-    setProducts([
-      { id: "101", title: "Product A" },
-      { id: "102", title: "Product B" },
-      { id: "103", title: "Product C" },
-    ]);
+    console.log("Fetching pages and products...");
+    console.log("Pages:", pages);
+    console.log("Products:", products);
 
     const selectedPages = getSelectedPages();
     const selectedProducts = getSelectedProducts();
@@ -117,7 +103,8 @@ export default function Dashboard({ onLogout }) {
       JSON.stringify(selectedProducts),
     );
 
-    alert("Settings saved!");
+    // Replace alert with toast
+    toggleToast("Settings saved successfully!");
   };
 
   // Convert pages to OptionList format
@@ -133,81 +120,92 @@ export default function Dashboard({ onLogout }) {
   }));
 
   return (
-    <Page
-      title="PageTest.ai Settings"
-      primaryAction={{
-        content: "Logout",
-        onAction: () => {
-          // Logout logic here
-          onLogout();
-        },
-      }}
-    >
-      <Layout>
-        <Layout.Section>
-          <Card title="Pages to Test">
-            <Text as="h2" variant="headingSm">
-              Select Pages to Test
-            </Text>
-            <div style={{ padding: "16px" }}>
-              <div style={{ marginBottom: "16px" }}>
-                <Checkbox
-                  label="All Pages"
-                  checked={allPagesSelected}
-                  onChange={handleAllPagesChange}
-                />
+    <Frame>
+      <Page
+        title="PageTest.ai Settings"
+        primaryAction={{
+          content: "Logout",
+          onAction: () => {
+            // Logout logic here
+            onLogout();
+          },
+        }}
+      >
+        {/* Add Toast component */}
+        {toastActive && (
+          <Toast
+            content={toastMessage}
+            onDismiss={() => setToastActive(false)}
+            duration={4000}
+            position="top"
+          />
+        )}
+        <Layout>
+          <Layout.Section>
+            <Card title="Pages to Test">
+              <Text as="h2" variant="headingSm">
+                Select Pages to Test
+              </Text>
+              <div style={{ padding: "16px" }}>
+                <div style={{ marginBottom: "16px" }}>
+                  <Checkbox
+                    label="All Pages"
+                    checked={allPagesSelected}
+                    onChange={handleAllPagesChange}
+                  />
+                </div>
+                <div style={{ maxHeight: "180px", overflowY: "auto" }}>
+                  <OptionList
+                    onChange={handlePagesChange}
+                    options={pageOptions}
+                    selected={selectedPages}
+                    allowMultiple
+                  />
+                </div>
               </div>
-              <div style={{ maxHeight: "180px", overflowY: "auto" }}>
-                <OptionList
-                  onChange={handlePagesChange}
-                  options={pageOptions}
-                  selected={selectedPages}
-                  allowMultiple
-                />
-              </div>
-            </div>
-          </Card>
-        </Layout.Section>
+            </Card>
+          </Layout.Section>
 
-        <Layout.Section>
-          <Card>
-            <Text as="h2" variant="headingSm">
-              Select Products to Test
-            </Text>
-            <div style={{ padding: "16px" }}>
-              <div style={{ marginBottom: "16px" }}>
-                <Checkbox
-                  label="All Products"
-                  checked={allProductsSelected}
-                  onChange={handleAllProductsChange}
-                />
+          <Layout.Section>
+            <Card>
+              <Text as="h2" variant="headingSm">
+                Select Products to Test
+              </Text>
+              <div style={{ padding: "16px" }}>
+                <div style={{ marginBottom: "16px" }}>
+                  <Checkbox
+                    label="All Products"
+                    checked={allProductsSelected}
+                    onChange={handleAllProductsChange}
+                  />
+                </div>
+                <div style={{ maxHeight: "180px", overflowY: "auto" }}>
+                  <OptionList
+                    onChange={handleProductsChange}
+                    options={productOptions}
+                    selected={selectedProducts}
+                    allowMultiple
+                  />
+                </div>
               </div>
-              <div style={{ maxHeight: "180px", overflowY: "auto" }}>
-                <OptionList
-                  onChange={handleProductsChange}
-                  options={productOptions}
-                  selected={selectedProducts}
-                  allowMultiple
-                />
-              </div>
-            </div>
-          </Card>
-        </Layout.Section>
+            </Card>
+          </Layout.Section>
 
-        <Layout.Section>
-          <div
-            style={{
-              marginTop: "5px",
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Button variant="primary" onClick={handleSaveSettings}>
-              Save Settings
-            </Button>
-          </div>
-        </Layout.Section>
-      </Layout>
-    </Page>
+          <Layout.Section>
+            <div
+              style={{
+                marginTop: "5px",
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Button variant="primary" onClick={handleSaveSettings}>
+                Save Settings
+              </Button>
+            </div>
+          </Layout.Section>
+        </Layout>
+      </Page>
+    </Frame>
   );
 }
