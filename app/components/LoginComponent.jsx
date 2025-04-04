@@ -13,8 +13,8 @@ import {
   Text,
   InlineStack,
 } from "@shopify/polaris";
-//import { LogoContainer } from "../../components/LogoContainer ";
 import { login } from "../helpers/utils";
+import LogoContainer from "./LogoContainer";
 
 const LoginComponent = ({ onLogin }) => {
   const [email, setEmail] = useState("");
