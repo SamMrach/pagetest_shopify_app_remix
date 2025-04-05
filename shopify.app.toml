@@ -3,7 +3,7 @@
 client_id = "bb34e6c982a694b30f31b008ced73198"
 name = "demo-app-2"
 handle = "demo-app-1384"
-application_url = "https://substitute-mainly-lamps-scotia.trycloudflare.com"
+application_url = "https://somehow-contractor-coast-sheer.trycloudflare.com"
 embedded = true
 
 [build]
@@ -31,9 +31,9 @@ scopes = "write_products,read_content,write_script_tags"
 
 [auth]
 redirect_urls = [
-  "https://substitute-mainly-lamps-scotia.trycloudflare.com/auth/callback",
-  "https://substitute-mainly-lamps-scotia.trycloudflare.com/auth/shopify/callback",
-  "https://substitute-mainly-lamps-scotia.trycloudflare.com/api/auth/callback"
+  "https://somehow-contractor-coast-sheer.trycloudflare.com/auth/callback",
+  "https://somehow-contractor-coast-sheer.trycloudflare.com/auth/shopify/callback",
+  "https://somehow-contractor-coast-sheer.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

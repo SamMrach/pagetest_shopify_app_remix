@@ -12,20 +12,21 @@ import {
   Frame, // Add this import
 } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
-import {
-  getAuthToken,
-  getSelectedPages,
-  getSelectedProducts,
-} from "../helpers/utils";
+
 import { useFetcher } from "@remix-run/react";
 export default function Dashboard({
   onLogout,
   pages,
   products,
-  triggerAction,
+  initialSelectedPages,
+  initialSelectedProducts,
 }) {
-  const [selectedPages, setSelectedPages] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedPages, setSelectedPages] = useState(
+    initialSelectedPages || [],
+  );
+  const [selectedProducts, setSelectedProducts] = useState(
+    initialSelectedProducts || [],
+  );
   const [allPagesSelected, setAllPagesSelected] = useState(false);
   const [allProductsSelected, setAllProductsSelected] = useState(false);
   const fetcher = useFetcher();
@@ -39,18 +40,6 @@ export default function Dashboard({
     setToastMessage(message);
     setToastActive(true);
   };
-
-  // Fetch pages and products from Shopify store
-  useEffect(() => {
-    const selectedPages = getSelectedPages();
-    const selectedProducts = getSelectedProducts();
-    if (selectedPages) {
-      setSelectedPages(selectedPages);
-    }
-    if (selectedProducts) {
-      setSelectedProducts(selectedProducts);
-    }
-  }, []);
 
   // Handle "All Pages" checkbox
   const handleAllPagesChange = () => {
@@ -84,36 +73,20 @@ export default function Dashboard({
 
   // Handle product selection with OptionList
   const handleProductsChange = (selected) => {
-    setSelectedProducts(selected);
-    setAllProductsSelected(selected.length === products.length);
+    setSelectedProducts(selected.filter(Boolean));
+    setAllProductsSelected(selected.filter(Boolean).length === products.length);
   };
 
   // Save settings
   const handleSaveSettings = async () => {
-    // This would be your API call to save the selected pages and products
-    // console.log("Saving settings:", {
-    //   pages: selectedPages,
-    //   products: selectedProducts,
-    // });
-    // Save selected pages and products to local storage
-    // localStorage.setItem(
-    //   "pagetest_selectedPages",
-    //   JSON.stringify(selectedPages),
-    // );
-    // localStorage.setItem(
-    //   "pagetest_selectedProducts",
-    //   JSON.stringify(selectedProducts),
-    // );
-
     // Call the fetcher to save the settings
     fetcher.submit(
       {
-        selectedPages: selectedPages.join(","),
-        selectedProducts: selectedProducts.join(","),
+        selectedPages: selectedPages,
+        selectedProducts: selectedProducts,
       },
       { method: "post" },
     );
-
     // Replace alert with toast
     toggleToast("Settings saved successfully!");
   };
@@ -129,6 +102,11 @@ export default function Dashboard({
     value: product.id,
     label: product.title,
   }));
+
+  useEffect(() => {
+    setAllPagesSelected(selectedPages.length === pages.length);
+    setAllProductsSelected(selectedProducts.length === products.length);
+  }, []);
 
   return (
     <Frame>

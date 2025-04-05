@@ -117,13 +117,12 @@ export async function loader({ request }) {
   }));
 
   // Fetch selected pages and products from the database
-  const selectedData = await fetchSelectePagesAndProducts(session.shop);
+  let selectedData = await fetchSelectePagesAndProducts(session.shop);
 
   return json({
     pages,
     products,
     shop: session.shop,
-    selectedData,
     selectedPages: selectedData.selectedPages,
     selectedProducts: selectedData.selectedProducts,
   });
@@ -135,10 +134,10 @@ const fetchSelectePagesAndProducts = async (domain) => {
     select: { selections: true },
   });
 
-  if (!shop) {
-    return json({ error: "Shop not found" }, { status: 404 });
+  if (!shop || !shop.selections) {
+    return { selectedPages: "", selectedProducts: "" };
   }
-  return json(shop.selections);
+  return shop.selections;
 };
 
 const saveSelectedPagesAndProducts = async (
@@ -161,7 +160,7 @@ const saveSelectedPagesAndProducts = async (
         },
       },
     });
-    return json({ message: "Shop created and selections saved" });
+    return { success: true, message: "Shop created and selections saved" };
   }
 
   await prisma.shop.update({
@@ -173,38 +172,37 @@ const saveSelectedPagesAndProducts = async (
       },
     },
   });
-  return json({ message: "Selections saved" });
+  return { success: true, message: "Selections saved" };
 };
 
 export async function action({ request }) {
   const { session } = await authenticate.admin(request);
   const formData = await request.formData();
-  const selectedPages = formData.get("selectedPages");
-  const selectedProducts = formData.get("selectedProducts");
-  const selectedPagesArray = selectedPages.split(",");
-  const selectedProductsArray = selectedProducts.split(",");
+  const selectedPages = formData
+    .get("selectedPages")
+    .split(",")
+    .filter(Boolean);
+  const selectedProducts = formData
+    .get("selectedProducts")
+    .split(",")
+    .filter(Boolean);
+
   const domain = session.shop;
 
   if (!domain) {
     return json({ error: "Missing shop domain" }, { status: 400 });
   }
-
-  return await saveSelectedPagesAndProducts(
+  const { success, message } = await saveSelectedPagesAndProducts(
     domain,
     selectedPages,
     selectedProducts,
   );
+  return json({ success, message });
 }
 
 export default function Index() {
-  const {
-    pages,
-    products,
-    shop,
-    selectedData,
-    selectedPages,
-    selectedProducts,
-  } = useLoaderData();
+  const { pages, products, shop, selectedPages, selectedProducts } =
+    useLoaderData();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const fetcher = useFetcher();
 
@@ -239,7 +237,7 @@ export default function Index() {
 
     console.log("selectedPages", selectedPages);
     console.log("selectedProducts", selectedProducts);
-    console.log("selectedData", selectedData);
+    console.log("shop", shop);
   }, []);
 
   return (
@@ -249,7 +247,8 @@ export default function Index() {
           onLogout={onLogout}
           pages={pages}
           products={products}
-          triggerAction={triggerAction}
+          initialSelectedPages={selectedPages}
+          initialSelectedProducts={selectedProducts}
         />
       ) : (
         <LoginComponent onLogin={onLogin} />
