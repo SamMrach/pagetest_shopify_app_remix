@@ -152,7 +152,16 @@ const saveSelectedPagesAndProducts = async (
   });
 
   if (!shop) {
-    return json({ error: "Shop not found" }, { status: 404 });
+    await prisma.shop.create({
+      data: {
+        domain,
+        selections: {
+          selectedPages,
+          selectedProducts,
+        },
+      },
+    });
+    return json({ message: "Shop created and selections saved" });
   }
 
   await prisma.shop.update({
@@ -164,6 +173,7 @@ const saveSelectedPagesAndProducts = async (
       },
     },
   });
+  return json({ message: "Selections saved" });
 };
 
 export async function action({ request }) {
@@ -174,8 +184,16 @@ export async function action({ request }) {
   const selectedPagesArray = selectedPages.split(",");
   const selectedProductsArray = selectedProducts.split(",");
   const domain = session.shop;
-  await saveSelectedPagesAndProducts(domain, selectedPages, selectedProducts);
-  return json({ success: true });
+
+  if (!domain) {
+    return json({ error: "Missing shop domain" }, { status: 400 });
+  }
+
+  return await saveSelectedPagesAndProducts(
+    domain,
+    selectedPages,
+    selectedProducts,
+  );
 }
 
 export default function Index() {
