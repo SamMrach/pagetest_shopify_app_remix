@@ -3,7 +3,7 @@
 client_id = "bb34e6c982a694b30f31b008ced73198"
 name = "demo-app-2"
 handle = "demo-app-1384"
-application_url = "https://somehow-contractor-coast-sheer.trycloudflare.com"
+application_url = "https://address-sandra-rio-payroll.trycloudflare.com"
 embedded = true
 
 [build]
@@ -21,19 +21,15 @@ api_version = "2025-04"
   topics = [ "app/scopes_update" ]
   uri = "/webhooks/app/scopes_update"
 
-  [[webhooks.subscriptions]]
-  topics = [ "APP_INSTALLED" ]
-  uri = "/webhooks/app/installed"
-
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_content,write_script_tags"
+scopes = "read_content,write_script_tags"
 
 [auth]
 redirect_urls = [
-  "https://somehow-contractor-coast-sheer.trycloudflare.com/auth/callback",
-  "https://somehow-contractor-coast-sheer.trycloudflare.com/auth/shopify/callback",
-  "https://somehow-contractor-coast-sheer.trycloudflare.com/api/auth/callback"
+  "https://address-sandra-rio-payroll.trycloudflare.com/auth/callback",
+  "https://address-sandra-rio-payroll.trycloudflare.com/auth/shopify/callback",
+  "https://address-sandra-rio-payroll.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

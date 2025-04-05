@@ -1,20 +1,26 @@
+import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
-import { redirect } from "@remix-run/node"; // Add this import
+import { Form, useActionData, useSubmit } from "@remix-run/react";
+import { Page, Button, Banner } from "@shopify/polaris";
 
-export const loader = async ({ request }) => {
+export async function action({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const domain = session.shop;
 
   try {
-    // Check if shop exists
+    // Delete existing shop record to simulate a fresh install
+    await prisma.shop.deleteMany({
+      where: { domain },
+    });
+
+    // Now run the same logic as in auth.$.jsx
     const shop = await prisma.shop.findUnique({
       where: { domain },
       select: { selections: true },
     });
 
     if (!shop) {
-      // Create new shop record
       await prisma.shop.create({
         data: {
           domain,
@@ -24,21 +30,24 @@ export const loader = async ({ request }) => {
           },
         },
       });
-      console.log(`Created shop ${domain}`);
 
-      // Optionally inject script tag for new installations
-      await injectScriptTag(admin, domain);
+      // Call the script tag injection function
+      const scriptTagResult = await injectScriptTag(admin, domain);
+
+      return json({
+        success: true,
+        message: `Created shop ${domain} and injected script tag: ${scriptTagResult}`,
+      });
     }
 
-    // Return redirect response
-    return redirect(`/app?shop=${domain}`);
+    return json({ success: false, message: "Shop already exists" });
   } catch (error) {
-    console.error(`Error in auth loader: ${error.message}`);
-    // Still redirect to app even if there's an error, but log it
-    return redirect(`/app?shop=${domain}`);
+    console.error(`Error in test auth: ${error.message}`);
+    return json({ success: false, error: error.message });
   }
-};
+}
 
+// Copy the injectScriptTag function from auth.$.jsx
 const injectScriptTag = async (admin, shop) => {
   try {
     console.log(`Checking for existing script tags for shop: ${shop}`);
@@ -130,3 +139,25 @@ const injectScriptTag = async (admin, shop) => {
     return false;
   }
 };
+
+export default function TestAuth() {
+  const actionData = useActionData();
+  const submit = useSubmit();
+
+  return (
+    <Page title="Test Auth Flow">
+      {actionData && (
+        <Banner
+          status={actionData.success ? "success" : "critical"}
+          title={actionData.success ? "Success" : "Error"}
+        >
+          <p>{actionData.message || actionData.error}</p>
+        </Banner>
+      )}
+
+      <Button primary onClick={() => submit({}, { method: "post" })}>
+        Simulate App Install
+      </Button>
+    </Page>
+  );
+}
