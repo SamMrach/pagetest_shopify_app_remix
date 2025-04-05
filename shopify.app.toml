@@ -3,7 +3,7 @@
 client_id = "bb34e6c982a694b30f31b008ced73198"
 name = "demo-app-2"
 handle = "demo-app-1384"
-application_url = "https://appearance-scroll-votes-existence.trycloudflare.com"
+application_url = "https://substitute-mainly-lamps-scotia.trycloudflare.com"
 embedded = true
 
 [build]
@@ -21,15 +21,19 @@ api_version = "2025-04"
   topics = [ "app/scopes_update" ]
   uri = "/webhooks/app/scopes_update"
 
+  [[webhooks.subscriptions]]
+  topics = [ "APP_INSTALLED" ]
+  uri = "/webhooks/app/installed"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_content"
+scopes = "write_products,read_content,write_script_tags"
 
 [auth]
 redirect_urls = [
-  "https://appearance-scroll-votes-existence.trycloudflare.com/auth/callback",
-  "https://appearance-scroll-votes-existence.trycloudflare.com/auth/shopify/callback",
-  "https://appearance-scroll-votes-existence.trycloudflare.com/api/auth/callback"
+  "https://substitute-mainly-lamps-scotia.trycloudflare.com/auth/callback",
+  "https://substitute-mainly-lamps-scotia.trycloudflare.com/auth/shopify/callback",
+  "https://substitute-mainly-lamps-scotia.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

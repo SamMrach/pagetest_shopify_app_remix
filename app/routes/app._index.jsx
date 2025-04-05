@@ -18,6 +18,7 @@ import { useLoaderData } from "@remix-run/react";
 import Dashboard from "../components/Dashboard";
 import LoginComponent from "../components/LoginComponent";
 import { json } from "@remix-run/node";
+import prisma from "../db.server";
 
 export async function loader({ request }) {
   const { admin, session } = await authenticate.admin(request);
@@ -115,16 +116,79 @@ export async function loader({ request }) {
     title: node.title,
   }));
 
+  // Fetch selected pages and products from the database
+  const selectedData = await fetchSelectePagesAndProducts(session.shop);
+
   return json({
     pages,
     products,
     shop: session.shop,
+    selectedData,
+    selectedPages: selectedData.selectedPages,
+    selectedProducts: selectedData.selectedProducts,
   });
 }
 
+const fetchSelectePagesAndProducts = async (domain) => {
+  const shop = await prisma.shop.findUnique({
+    where: { domain },
+    select: { selections: true },
+  });
+
+  if (!shop) {
+    return json({ error: "Shop not found" }, { status: 404 });
+  }
+  return json(shop.selections);
+};
+
+const saveSelectedPagesAndProducts = async (
+  domain,
+  selectedPages,
+  selectedProducts,
+) => {
+  const shop = await prisma.shop.findUnique({
+    where: { domain },
+    select: { selections: true },
+  });
+
+  if (!shop) {
+    return json({ error: "Shop not found" }, { status: 404 });
+  }
+
+  await prisma.shop.update({
+    where: { domain },
+    data: {
+      selections: {
+        selectedPages,
+        selectedProducts,
+      },
+    },
+  });
+};
+
+export async function action({ request }) {
+  const { session } = await authenticate.admin(request);
+  const formData = await request.formData();
+  const selectedPages = formData.get("selectedPages");
+  const selectedProducts = formData.get("selectedProducts");
+  const selectedPagesArray = selectedPages.split(",");
+  const selectedProductsArray = selectedProducts.split(",");
+  const domain = session.shop;
+  await saveSelectedPagesAndProducts(domain, selectedPages, selectedProducts);
+  return json({ success: true });
+}
+
 export default function Index() {
-  const { pages, products, shop } = useLoaderData();
+  const {
+    pages,
+    products,
+    shop,
+    selectedData,
+    selectedPages,
+    selectedProducts,
+  } = useLoaderData();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const fetcher = useFetcher();
 
   const onLogin = (token) => {
     localStorage.setItem("pagetest_authToken", token);
@@ -136,17 +200,39 @@ export default function Index() {
     setIsAuthenticated(false);
   };
 
+  const triggerAction = async (selectedPages, selectedProducts) => {
+    fetcher.submit(
+      {
+        _action: "submit",
+        selectedPages,
+        selectedProducts,
+      },
+      { method: "post" }, // Adjust the path as needed
+    );
+    console.log("selectedPages", selectedPages);
+    console.log("selectedProducts", selectedProducts);
+  };
+
   useEffect(() => {
     const authToken = localStorage.getItem("pagetest_authToken");
     if (authToken) {
       setIsAuthenticated(true);
     }
+
+    console.log("selectedPages", selectedPages);
+    console.log("selectedProducts", selectedProducts);
+    console.log("selectedData", selectedData);
   }, []);
 
   return (
     <Page>
       {isAuthenticated ? (
-        <Dashboard onLogout={onLogout} pages={pages} products={products} />
+        <Dashboard
+          onLogout={onLogout}
+          pages={pages}
+          products={products}
+          triggerAction={triggerAction}
+        />
       ) : (
         <LoginComponent onLogin={onLogin} />
       )}

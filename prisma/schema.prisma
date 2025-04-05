@@ -30,3 +30,11 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+model Shop {
+  id               String   @id @default(cuid())
+  domain           String   @unique
+  selections       Json     // Store selected pages/products
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

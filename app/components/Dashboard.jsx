@@ -17,12 +17,18 @@ import {
   getSelectedPages,
   getSelectedProducts,
 } from "../helpers/utils";
-
-export default function Dashboard({ onLogout, pages, products }) {
+import { useFetcher } from "@remix-run/react";
+export default function Dashboard({
+  onLogout,
+  pages,
+  products,
+  triggerAction,
+}) {
   const [selectedPages, setSelectedPages] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [allPagesSelected, setAllPagesSelected] = useState(false);
   const [allProductsSelected, setAllProductsSelected] = useState(false);
+  const fetcher = useFetcher();
 
   // Add state for toast
   const [toastActive, setToastActive] = useState(false);
@@ -36,10 +42,6 @@ export default function Dashboard({ onLogout, pages, products }) {
 
   // Fetch pages and products from Shopify store
   useEffect(() => {
-    console.log("Fetching pages and products...");
-    console.log("Pages:", pages);
-    console.log("Products:", products);
-
     const selectedPages = getSelectedPages();
     const selectedProducts = getSelectedProducts();
     if (selectedPages) {
@@ -87,20 +89,29 @@ export default function Dashboard({ onLogout, pages, products }) {
   };
 
   // Save settings
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     // This would be your API call to save the selected pages and products
-    console.log("Saving settings:", {
-      pages: selectedPages,
-      products: selectedProducts,
-    });
+    // console.log("Saving settings:", {
+    //   pages: selectedPages,
+    //   products: selectedProducts,
+    // });
     // Save selected pages and products to local storage
-    localStorage.setItem(
-      "pagetest_selectedPages",
-      JSON.stringify(selectedPages),
-    );
-    localStorage.setItem(
-      "pagetest_selectedProducts",
-      JSON.stringify(selectedProducts),
+    // localStorage.setItem(
+    //   "pagetest_selectedPages",
+    //   JSON.stringify(selectedPages),
+    // );
+    // localStorage.setItem(
+    //   "pagetest_selectedProducts",
+    //   JSON.stringify(selectedProducts),
+    // );
+
+    // Call the fetcher to save the settings
+    fetcher.submit(
+      {
+        selectedPages: selectedPages.join(","),
+        selectedProducts: selectedProducts.join(","),
+      },
+      { method: "post" },
     );
 
     // Replace alert with toast

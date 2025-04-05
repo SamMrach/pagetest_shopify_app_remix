@@ -96,14 +96,17 @@ const LoginComponent = ({ onLogin }) => {
               </Button>
 
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Link url="https://app.pagetest.ai/forgot-password" external>
+                <Link
+                  url="https://app.pagetest.ai/forgot-password"
+                  target="_blank"
+                >
                   Forgot the password?
                 </Link>
               </div>
 
               <div style={{ textAlign: "center" }}>
                 <Text>Don&apos;t have an account yet?</Text>
-                <Link url="https://pagetest.ai/" external>
+                <Link url="https://pagetest.ai/" target="_blank">
                   {" "}
                   Register here
                 </Link>
