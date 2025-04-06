@@ -107,12 +107,12 @@ export async function loader({ request }) {
 
   // Format the data for the component
   const pages = allPages.map((node) => ({
-    id: node.id,
+    id: node.id.replace("gid://shopify/Page/", ""),
     title: node.title,
   }));
 
   const products = allProducts.map((node) => ({
-    id: node.id,
+    id: node.id.replace("gid://shopify/Product/", ""),
     title: node.title,
   }));
 

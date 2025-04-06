@@ -10,9 +10,9 @@ export async function action({ request }) {
 
   try {
     // Delete existing shop record to simulate a fresh install
-    await prisma.shop.deleteMany({
-      where: { domain },
-    });
+    // await prisma.shop.deleteMany({
+    //   where: { domain },
+    // });
 
     // Now run the same logic as in auth.$.jsx
     const shop = await prisma.shop.findUnique({
@@ -73,7 +73,7 @@ const injectScriptTag = async (admin, shop) => {
     );
 
     // Define your script URL
-    const scriptUrl = `https://static.staticsave.com/pagetest/custom-snippet.js`;
+    const scriptUrl = `${process.env.SHOPIFY_APP_URL}/public/custom-script`;
 
     // Check if script tag with this URL already exists
     const existingScript = scriptTags.find(

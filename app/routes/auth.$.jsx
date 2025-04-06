@@ -64,7 +64,7 @@ const injectScriptTag = async (admin, shop) => {
     );
 
     // Define your script URL
-    const scriptUrl = `https://static.staticsave.com/pagetest/custom-snippet.js`;
+    const scriptUrl = `${process.env.SHOPIFY_APP_URL}/public/custom-script`;
 
     // Check if script tag with this URL already exists
     const existingScript = scriptTags.find(
