@@ -1,3 +1,5 @@
 import { flatRoutes } from "@remix-run/fs-routes";
 
-export default flatRoutes();
+const routes = flatRoutes();
+console.log("Registered routes:", Object.keys(routes));
+export default routes;

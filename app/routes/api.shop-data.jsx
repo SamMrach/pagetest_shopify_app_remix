@@ -1,0 +1,77 @@
+import { json } from "@remix-run/node";
+import prisma from "../db.server"; // your Prisma instance
+
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const domain = url.searchParams.get("domain");
+  const dataType = url.searchParams.get("type"); // "pages", "products", or undefined for both
+
+  if (!domain) {
+    return json(
+      { error: "Missing shop domain" },
+      {
+        status: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET",
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  }
+
+  const shop = await prisma.shop.findUnique({
+    where: { domain },
+    select: { selections: true },
+  });
+
+  if (!shop) {
+    return json(
+      { error: "Shop not found" },
+      {
+        status: 404,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET",
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  }
+
+  // Prepare the response based on the requested data type
+  let responseData = {};
+
+  if (dataType === "pages") {
+    // Return only pages
+    responseData = {
+      selectedPages: shop.selections.selectedPages || [],
+    };
+  } else if (dataType === "products") {
+    // Return only products
+    responseData = {
+      selectedProducts: shop.selections.selectedProducts || [],
+    };
+  } else {
+    // Invalid data type requested
+    return json(
+      { error: "Invalid data type. Use 'pages', 'products'" },
+      {
+        status: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET",
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  }
+
+  return json(responseData, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Cache-Control": "no-store",
+    },
+  });
+}
