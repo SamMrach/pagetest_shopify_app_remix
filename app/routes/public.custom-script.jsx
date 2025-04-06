@@ -1,6 +1,11 @@
-(function() {
+import pkg from "@remix-run/node";
+const { Response } = pkg;
+
+export function loader() {
+  // This is the JavaScript content that will be served
+  const scriptContent = `(function() {
     // Configuration
-    const API_BASE_URL = 'https://your-app-domain.com'; // Replace with your actual app domain
+    const API_BASE_URL = '${process.env.SHOPIFY_APP_URL || "https://your-app-domain.com"}'; // Will use your app's URL
     
     // Get the current shop domain from the window location
     const shopDomain = Shopify.shop || window.location.hostname;
@@ -14,7 +19,7 @@
     function getCurrentProductId() {
       // This assumes Shopify's standard data structure
       if (window.meta && window.meta.product && window.meta.product.id) {
-        return `gid://shopify/Product/${window.meta.product.id}`;
+        return \`gid://shopify/Product/\${window.meta.product.id}\`;
       }
       
       // Alternative method if meta is not available
@@ -22,7 +27,7 @@
       if (productJson) {
         try {
           const data = JSON.parse(productJson.innerHTML);
-          return `gid://shopify/Product/${data.id}`;
+          return \`gid://shopify/Product/\${data.id}\`;
         } catch (e) {
           console.error('Error parsing product JSON:', e);
         }
@@ -35,19 +40,19 @@
     function getCurrentPageId() {
       // This is more complex as page IDs aren't typically exposed in the frontend
       // You might need to use the page handle and match it on the backend
-      const pageHandle = window.location.pathname.replace(/^\/pages\//, '');
+      const pageHandle = window.location.pathname.replace(/^\\\/pages\\\//,'');
       
       // For demonstration, we'll return a placeholder
       // In a real implementation, you might need to map handles to IDs on your backend
-      return pageHandle ? `page-handle-${pageHandle}` : null;
+      return pageHandle ? \`page-handle-\${pageHandle}\` : null;
     }
     
     // Fetch selected pages and products from your API
     function fetchSelectedItems() {
-      return fetch(`${API_BASE_URL}/api/shop-data?domain=${encodeURIComponent(shopDomain)}`)
+      return fetch(\`\${API_BASE_URL}/api/shop-data?domain=\${encodeURIComponent(shopDomain)}\`)
         .then(response => {
           if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
+            throw new Error(\`API request failed with status \${response.status}\`);
           }
           return response.json();
         })
@@ -156,5 +161,15 @@
           console.error('PageTest.ai - Error:', error);
         });
     });
-  })();
-  
+  })();`;
+
+  // Return the JavaScript content with appropriate headers
+  return new globalThis.Response(scriptContent, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/javascript",
+      "Cache-Control": "public, max-age=3600",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
