@@ -135,7 +135,7 @@ const fetchSelectePagesAndProducts = async (domain) => {
   });
 
   if (!shop || !shop.selections) {
-    return { selectedPages: "", selectedProducts: "" };
+    return { selectedPages: [], selectedProducts: [] };
   }
   return shop.selections;
 };

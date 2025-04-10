@@ -3,7 +3,7 @@
 client_id = "bb34e6c982a694b30f31b008ced73198"
 name = "demo-app-2"
 handle = "demo-app-1384"
-application_url = "https://intervention-very-resulted-article.trycloudflare.com"
+application_url = "https://billy-bufing-nashville-announce.trycloudflare.com"
 embedded = true
 
 [build]
@@ -23,13 +23,13 @@ api_version = "2025-04"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_content,write_script_tags"
+scopes = "read_content,write_script_tags,read_products"
 
 [auth]
 redirect_urls = [
-  "https://intervention-very-resulted-article.trycloudflare.com/auth/callback",
-  "https://intervention-very-resulted-article.trycloudflare.com/auth/shopify/callback",
-  "https://intervention-very-resulted-article.trycloudflare.com/api/auth/callback"
+  "https://billy-bufing-nashville-announce.trycloudflare.com/auth/callback",
+  "https://billy-bufing-nashville-announce.trycloudflare.com/auth/shopify/callback",
+  "https://billy-bufing-nashville-announce.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

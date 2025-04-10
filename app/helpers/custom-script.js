@@ -142,11 +142,10 @@ function isOnRegularPage() {
 // Initialize page testing
 function fetchAndInjectedLatestSnippet() {
   // Your page testing logic here
-  const snippetUrl = "https://cdn.pagetest.ai/snippet/latest.js";
+  const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
   const script = document.createElement("script");
   script.src = snippetUrl;
-  //document.body.appendChild(script);
-  console.log("PageTest.ai - Initializing page testing");
+  document.body.appendChild(script);
 }
 
 // Main execution

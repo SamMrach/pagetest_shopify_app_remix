@@ -80,6 +80,10 @@ export default function Dashboard({
   // Save settings
   const handleSaveSettings = async () => {
     // Call the fetcher to save the settings
+    if (pages.length === 0 && products.length === 0) {
+      toggleToast("No pages or products available to save.");
+      return;
+    }
     fetcher.submit(
       {
         selectedPages: selectedPages,
@@ -104,8 +108,13 @@ export default function Dashboard({
   }));
 
   useEffect(() => {
-    setAllPagesSelected(selectedPages.length === pages.length);
-    setAllProductsSelected(selectedProducts.length === products.length);
+    setAllPagesSelected(
+      selectedPages.length === pages.length && selectedPages.length > 0,
+    );
+    setAllProductsSelected(
+      selectedProducts.length === products.length &&
+        selectedProducts.length > 0,
+    );
   }, []);
 
   return (
@@ -132,51 +141,69 @@ export default function Dashboard({
         <Layout>
           <Layout.Section>
             <Card title="Pages to Test">
-              <Text as="h2" variant="headingSm">
-                Select Pages to Test
-              </Text>
-              <div style={{ padding: "16px" }}>
-                <div style={{ marginBottom: "16px" }}>
-                  <Checkbox
-                    label="All Pages"
-                    checked={allPagesSelected}
-                    onChange={handleAllPagesChange}
-                  />
-                </div>
-                <div style={{ maxHeight: "180px", overflowY: "auto" }}>
-                  <OptionList
-                    onChange={handlePagesChange}
-                    options={pageOptions}
-                    selected={selectedPages}
-                    allowMultiple
-                  />
-                </div>
-              </div>
+              {pages.length === 0 ? (
+                <Text as="h2" variant="headingSm">
+                  No pages found
+                </Text>
+              ) : (
+                <>
+                  {
+                    <Text as="h2" variant="headingSm">
+                      Select Pages to Test
+                    </Text>
+                  }
+                  <div style={{ padding: "16px" }}>
+                    <div style={{ marginBottom: "16px" }}>
+                      <Checkbox
+                        label="All Pages"
+                        checked={allPagesSelected}
+                        onChange={handleAllPagesChange}
+                      />
+                    </div>
+                    <div style={{ maxHeight: "180px", overflowY: "auto" }}>
+                      <OptionList
+                        onChange={handlePagesChange}
+                        options={pageOptions}
+                        selected={selectedPages}
+                        allowMultiple
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </Card>
           </Layout.Section>
 
           <Layout.Section>
             <Card>
-              <Text as="h2" variant="headingSm">
-                Select Products to Test
-              </Text>
-              <div style={{ padding: "16px" }}>
-                <div style={{ marginBottom: "16px" }}>
-                  <Checkbox
-                    label="All Products"
-                    checked={allProductsSelected}
-                    onChange={handleAllProductsChange}
-                  />
-                </div>
-                <div style={{ maxHeight: "180px", overflowY: "auto" }}>
-                  <OptionList
-                    onChange={handleProductsChange}
-                    options={productOptions}
-                    selected={selectedProducts}
-                    allowMultiple
-                  />
-                </div>
-              </div>
+              {
+                products.length === 0 ? (
+                  <Text>No products available</Text>
+                ) : (
+                  <>
+                    <Text as="h2" variant="headingSm">
+                      Select Products to Test
+                    </Text>
+                    <div style={{ padding: "16px" }}>
+                      <div style={{ marginBottom: "16px" }}>
+                        <Checkbox
+                          label="All Products"
+                          checked={allProductsSelected}
+                          onChange={handleAllProductsChange}
+                        />
+                      </div>
+                      <div style={{ maxHeight: "180px", overflowY: "auto" }}>
+                        <OptionList
+                          onChange={handleProductsChange}
+                          options={productOptions}
+                          selected={selectedProducts}
+                          allowMultiple
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) /* Show message if no products available */
+              }
             </Card>
           </Layout.Section>
 

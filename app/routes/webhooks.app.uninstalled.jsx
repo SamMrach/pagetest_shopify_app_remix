@@ -18,7 +18,7 @@ export const action = async ({ request }) => {
     }
 
     // Also delete shop data from your custom table
-    //await db.shop.deleteMany({ where: { domain: shop } });
+    await db.shop.deleteMany({ where: { domain: shop } });
 
     console.log(`Successfully cleaned up data for ${shop}`);
     return new Response(null, { status: 200 });
@@ -51,7 +51,7 @@ const removeScriptTags = async (admin) => {
     );
 
     // Define your script URL pattern to match
-    const scriptUrlPattern = "staticsave.com/pagetest/";
+    const scriptUrlPattern = "pagetest/custom-script";
 
     // Filter script tags that match your pattern
     const appScriptTags = scriptTags.filter((script) =>
