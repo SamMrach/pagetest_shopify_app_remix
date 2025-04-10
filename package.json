@@ -2,7 +2,7 @@
   "name": "demo-app-2",
   "private": true,
   "scripts": {
-    "build": "prisma generate && NODE_OPTIONS='--experimental-import-meta-resolve' remix build",   
+    "build": "prisma generate && NODE_OPTIONS='--experimental-import-meta-resolve --experimental-json-modules' remix build",   
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
