@@ -2,9 +2,8 @@
   "name": "demo-app-2",
   "private": true,
   "scripts": {
-    "prebuild": "node fix-imports.js",
-    "build": "prisma generate && NODE_OPTIONS='--experimental-import-meta-resolve --experimental-json-modules' remix build",
-    "dev": "shopify app dev",
+    "build": "prisma generate && vite build && vite build --ssr",
+        "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
