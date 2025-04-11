@@ -106,7 +106,7 @@ const injectScriptTag = async (admin, shop) => {
     );
 
     // Define your script URL
-    const scriptUrl = `{process.env.SHOPIFY_APP_URL}/pagetest/custom-script`;
+    const scriptUrl = `${process.env.SHOPIFY_APP_URL}/pagetest/custom-script`;
 
     // Check if script tag with this URL already exists
     const existingScript = scriptTags.find(
