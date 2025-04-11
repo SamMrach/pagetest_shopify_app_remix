@@ -1,7 +1,20 @@
 import { json } from "@remix-run/node";
-import prisma from "../db.server"; // your Prisma instance
+import prisma from "../db.server";
 
+// Add this function to handle OPTIONS requests
 export async function loader({ request }) {
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+  // Handle preflight OPTIONS request
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      headers,
+    });
+  }
+
   const url = new URL(request.url);
   const domain = url.searchParams.get("domain");
   const dataType = url.searchParams.get("type"); // "pages", "products", or undefined for both
@@ -13,7 +26,8 @@ export async function loader({ request }) {
         status: 400,
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
           "Cache-Control": "no-store",
         },
       },
@@ -30,11 +44,7 @@ export async function loader({ request }) {
       { error: "Shop not found" },
       {
         status: 404,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET",
-          "Cache-Control": "no-store",
-        },
+        headers,
       },
     );
   }
@@ -55,23 +65,15 @@ export async function loader({ request }) {
   } else {
     // Invalid data type requested
     return json(
-      { error: "Invalid data type. Use 'pages', 'products'" },
+      { error: "Invalid data type." },
       {
         status: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET",
-          "Cache-Control": "no-store",
-        },
+        headers,
       },
     );
   }
 
   return json(responseData, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET",
-      "Cache-Control": "no-store",
-    },
+    headers,
   });
 }
