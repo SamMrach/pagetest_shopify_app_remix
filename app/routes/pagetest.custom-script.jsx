@@ -3,7 +3,7 @@ import { resolve } from "path";
 
 export function loader() {
   // Get the app URL from environment variables
-  const appUrl = process.env.SHOPIFY_APP_URL || "https://your-app-domain.com";
+  const appUrl = process.env.SHOPIFY_APP_URL;
 
   try {
     // Read the script file
