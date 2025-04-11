@@ -12,19 +12,10 @@ function isProductPage() {
 // Helper function to extract product ID from the page
 function getCurrentProductId() {
   // This assumes Shopify's standard data structure
-  if (window.meta && window.meta.product && window.meta.product.id) {
-    return `${window.meta.product.id}`;
-  }
+  if (window.APP_PAGE_DATA?.productId) return window.APP_PAGE_DATA.productId;
 
-  // Alternative method if meta is not available
-  const productJson = document.getElementById("ProductJson-product-template");
-  if (productJson) {
-    try {
-      const data = JSON.parse(productJson.innerHTML);
-      return `gid://shopify/Product/${data.id}`;
-    } catch (e) {
-      console.error("Error parsing product JSON:", e);
-    }
+  if (window.meta?.product?.id) {
+    return `${window.meta.product.id}`;
   }
 
   return null;
@@ -32,15 +23,18 @@ function getCurrentProductId() {
 
 // Helper function to get current page ID
 function getCurrentPageId() {
+  // ✅ Prefer APP_PAGE_DATA if available
+  if (window.APP_PAGE_DATA?.pageId) return window.APP_PAGE_DATA.pageId;
+
   if (
     window.meta &&
     window.meta.page &&
     window.meta.page.pageType === "page" &&
     window.meta.page.resourceId
   ) {
-    // Return the page ID in the Shopify GraphQL ID format
     return window.meta.page.resourceId;
   }
+
   return null;
 }
 // Fetch only the relevant selected items based on page type

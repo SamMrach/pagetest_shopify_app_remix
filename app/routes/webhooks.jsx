@@ -4,8 +4,6 @@ import db from "../db.server";
 export const action = async ({ request }) => {
   const { shop, admin, session, topic } = await authenticate.webhook(request);
 
-  console.log(`Received ${topic} webhook for ${shop}`);
-
   switch (topic) {
     case "APP_UNINSTALLED":
       try {
@@ -27,9 +25,7 @@ export const action = async ({ request }) => {
         await db.session.deleteMany({ where: { shop } });
 
         // Also delete shop data from your custom table
-        await db.shop.deleteMany({ where: { domain: shop } });
-
-        console.log(`Successfully cleaned up data for ${shop}`);
+        //await db.shop.deleteMany({ where: { domain: shop } });
       } catch (error) {
         console.error(
           `Error handling app uninstalled webhook: ${error.message}`,
