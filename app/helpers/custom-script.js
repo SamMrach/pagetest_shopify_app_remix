@@ -1,6 +1,5 @@
 // Configuration
-const API_BASE_URL =
-  '${process.env.SHOPIFY_APP_URL || "https://your-app-domain.com"}'; // Will use your app's URL
+const API_BASE_URL = "${process.env.SHOPIFY_APP_URL}"; // Will use your app's URL
 
 // Get the current shop domain from the window location
 const shopDomain = Shopify.shop || window.location.hostname;

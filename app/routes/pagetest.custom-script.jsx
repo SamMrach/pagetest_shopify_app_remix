@@ -12,7 +12,7 @@ export function loader() {
 
     // Replace environment variable placeholders
     scriptContent = scriptContent.replace(
-      '${process.env.SHOPIFY_APP_URL || "https://your-app-domain.com"}',
+      "${process.env.SHOPIFY_APP_URL",
       appUrl,
     );
 
