@@ -1,18 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFetcher } from "@remix-run/react";
-import {
-  Page,
-  Layout,
-  Text,
-  Card,
-  Button,
-  BlockStack,
-  Box,
-  List,
-  Link,
-  InlineStack,
-} from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { Page } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import Dashboard from "../components/Dashboard";
@@ -129,15 +117,20 @@ export async function loader({ request }) {
 }
 
 const fetchSelectePagesAndProducts = async (domain) => {
-  const shop = await prisma.shop.findUnique({
-    where: { domain },
-    select: { selections: true },
-  });
+  try {
+    const shop = await prisma.shop.findUnique({
+      where: { domain },
+      select: { selections: true },
+    });
 
-  if (!shop || !shop.selections) {
+    if (!shop || !shop.selections) {
+      return { selectedPages: [], selectedProducts: [] };
+    }
+    return shop.selections;
+  } catch (e) {
+    console.log(e);
     return { selectedPages: [], selectedProducts: [] };
   }
-  return shop.selections;
 };
 
 const saveSelectedPagesAndProducts = async (
@@ -145,34 +138,39 @@ const saveSelectedPagesAndProducts = async (
   selectedPages,
   selectedProducts,
 ) => {
-  const shop = await prisma.shop.findUnique({
-    where: { domain },
-    select: { selections: true },
-  });
+  try {
+    const shop = await prisma.shop.findUnique({
+      where: { domain },
+      select: { selections: true },
+    });
 
-  if (!shop) {
-    await prisma.shop.create({
+    if (!shop) {
+      await prisma.shop.create({
+        data: {
+          domain,
+          selections: {
+            selectedPages,
+            selectedProducts,
+          },
+        },
+      });
+      return { success: true, message: "Shop created and selections saved" };
+    }
+
+    await prisma.shop.update({
+      where: { domain },
       data: {
-        domain,
         selections: {
           selectedPages,
           selectedProducts,
         },
       },
     });
-    return { success: true, message: "Shop created and selections saved" };
+    return { success: true, message: "Selections saved" };
+  } catch (e) {
+    console.log(e);
+    return { success: false, message: "Something went wrong" };
   }
-
-  await prisma.shop.update({
-    where: { domain },
-    data: {
-      selections: {
-        selectedPages,
-        selectedProducts,
-      },
-    },
-  });
-  return { success: true, message: "Selections saved" };
 };
 
 export async function action({ request }) {
@@ -204,7 +202,6 @@ export default function Index() {
   const { pages, products, shop, selectedPages, selectedProducts } =
     useLoaderData();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const fetcher = useFetcher();
 
   const onLogin = (token) => {
     localStorage.setItem("pagetest_authToken", token);
@@ -216,28 +213,11 @@ export default function Index() {
     setIsAuthenticated(false);
   };
 
-  const triggerAction = async (selectedPages, selectedProducts) => {
-    fetcher.submit(
-      {
-        _action: "submit",
-        selectedPages,
-        selectedProducts,
-      },
-      { method: "post" }, // Adjust the path as needed
-    );
-    console.log("selectedPages", selectedPages);
-    console.log("selectedProducts", selectedProducts);
-  };
-
   useEffect(() => {
     const authToken = localStorage.getItem("pagetest_authToken");
     if (authToken) {
       setIsAuthenticated(true);
     }
-
-    console.log("selectedPages", selectedPages);
-    console.log("selectedProducts", selectedProducts);
-    console.log("shop", shop);
   }, []);
 
   return (

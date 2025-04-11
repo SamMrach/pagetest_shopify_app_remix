@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useCallback } from "react";
 import {
-  AppProvider,
   Page,
   Card,
   FormLayout,
@@ -11,7 +10,6 @@ import {
   Link,
   Box,
   Text,
-  InlineStack,
 } from "@shopify/polaris";
 import { login } from "../helpers/utils";
 import LogoContainer from "./LogoContainer";

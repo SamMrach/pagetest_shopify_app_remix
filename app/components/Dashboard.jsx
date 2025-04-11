@@ -68,7 +68,9 @@ export default function Dashboard({
   // Handle page selection with OptionList
   const handlePagesChange = (selected) => {
     setSelectedPages(selected);
-    setAllPagesSelected(selected.length === pages.length);
+    setAllPagesSelected(
+      selected.length === pages.length && selected.length > 0,
+    );
   };
 
   // Handle product selection with OptionList
@@ -124,7 +126,6 @@ export default function Dashboard({
         primaryAction={{
           content: "Logout",
           onAction: () => {
-            // Logout logic here
             onLogout();
           },
         }}
