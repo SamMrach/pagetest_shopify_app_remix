@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "bb34e6c982a694b30f31b008ced73198"
-name = "demo-app-2"
-handle = "demo-app-1384"
+name = "Pagetest"
+handle = "pagetest-ai"
 application_url = "https://pagetest-shopify-app-remix.vercel.app"
 embedded = true
 

@@ -1,5 +1,5 @@
 {
-  "name": "demo-app-2",
+  "name": "pagetest",
   "private": true,
   "scripts": {
     "build": "prisma generate && vite build && vite build --ssr",

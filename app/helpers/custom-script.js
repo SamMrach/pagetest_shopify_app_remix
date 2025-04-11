@@ -43,15 +43,6 @@ function fetchSelectedItems() {
   const isOnProductPage = isProductPage();
   const dataType = isOnProductPage ? "products" : "pages";
 
-  console.log(
-    "PageTest.ai - Detected page type:",
-    isOnProductPage
-      ? "Product Page"
-      : isOnRegularPage()
-        ? "Regular Page"
-        : "Unknown",
-  );
-
   // Fetch only the data we need based on page type
   return fetch(
     `${API_BASE_URL}/api/shop-data?domain=${encodeURIComponent(shopDomain)}&type=${dataType}`,
@@ -76,7 +67,6 @@ function checkCurrentPage(selections) {
   if (isOnProductPage) {
     // We're on a product page, check if it's selected
     const productId = getCurrentProductId();
-    //console.log("PageTest.ai - Current product ID:", productId);
 
     // Handle the case where selections might be a string or array
     const selectedProducts = Array.isArray(selections.selectedProducts)
@@ -84,8 +74,6 @@ function checkCurrentPage(selections) {
       : typeof selections.selectedProducts === "string"
         ? selections.selectedProducts.split(",")
         : [];
-
-    //console.log("PageTest.ai - Selected Products:", selectedProducts);
 
     if (selectedProducts.length === 0) {
       console.log("PageTest.ai - No products selected for testing");
@@ -102,7 +90,6 @@ function checkCurrentPage(selections) {
   } else if (isOnRegularPage()) {
     // We're on a regular page, check if it's selected
     const pageId = getCurrentPageId();
-    console.log("PageTest.ai - Current page ID/handle:", pageId);
 
     // Handle the case where selections might be a string or array
     const selectedPages = Array.isArray(selections.selectedPages)
@@ -110,8 +97,6 @@ function checkCurrentPage(selections) {
       : typeof selections.selectedPages === "string"
         ? selections.selectedPages.split(",")
         : [];
-
-    console.log("PageTest.ai - Selected Pages:", selectedPages);
 
     if (selectedPages.length === 0) {
       console.log("PageTest.ai - No pages selected for testing");
