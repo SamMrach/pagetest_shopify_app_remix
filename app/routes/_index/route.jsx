@@ -3,15 +3,11 @@ import { authenticate } from "../../shopify.server";
 import styles from "./styles.module.css";
 
 export const loader = async ({ request }) => {
-  try {
-    // Try to authenticate the request
-    await authenticate.admin(request);
+  const url = new URL(request.url);
 
-    // If authentication succeeds, user is already logged in
-    // Redirect them to the app
-    return redirect("/app");
-  } catch (error) {
-    // If authentication fails, redirect to login
-    return redirect("/auth/login");
+  if (url.searchParams.get("shop")) {
+    throw redirect(`/app?${url.searchParams.toString()}`);
   }
+
+  return redirect("/auth/login");
 };
