@@ -3,34 +3,18 @@ const API_BASE_URL = "${process.env.SHOPIFY_APP_URL}";
 const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
 const shopDomain = Shopify.shop || window.location.hostname;
 
-// Helper function to determine if the current page is a product page
 function isProductPage() {
   return window.location.pathname.includes("/products/");
 }
 
-// Helper function to extract product ID from the page
 function getCurrentProductId() {
-  // This assumes Shopify's standard data structure
   if (window.APP_PAGE_DATA?.productId) return window.APP_PAGE_DATA.productId;
-
-  // if (window.meta?.product?.id) {
-  //   return `${window.meta.product.id}`;
-  // }
 
   return null;
 }
 
 function getCurrentPageId() {
   if (window.APP_PAGE_DATA?.pageId) return window.APP_PAGE_DATA.pageId;
-
-  // if (
-  //   window.meta &&
-  //   window.meta.page &&
-  //   window.meta.page.pageType === "page" &&
-  //   window.meta.page.resourceId
-  // ) {
-  //   return window.meta.page.resourceId;
-  // }
 
   return null;
 }
@@ -54,9 +38,7 @@ function isOnRegularPage() {
   return window.location.pathname.includes("/pages/");
 }
 
-// Initialize page testing
 function fetchAndInjectedLatestSnippet() {
-  // Your page testing logic here
   const script = document.createElement("script");
   script.src = snippetUrl;
   document.body.appendChild(script);
@@ -71,7 +53,11 @@ async function initializePageTestScript() {
   const isOnProductPage = isProductPage();
   const dataType = isOnProductPage ? "products" : "pages";
   const shopDomain = Shopify.shop || window.location.hostname;
-  const selectedItems = await fetchSelectedItems(dataType, shopDomain);
+  const res = await fetchSelectedItems(dataType, shopDomain);
+  const selectedItems = isOnProductPage
+    ? res.selectedProducts
+    : res.selectedPages;
+
   if (selectedItems.length === 0) {
     console.log("PageTest.ai - No items selected for testing");
     return;
