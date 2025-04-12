@@ -1,7 +1,6 @@
 // Configuration
-const API_BASE_URL = "${process.env.SHOPIFY_APP_URL}"; // Will use your app's URL
-
-// Get the current shop domain from the window location
+const API_BASE_URL = "${process.env.SHOPIFY_APP_URL}";
+const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
 const shopDomain = Shopify.shop || window.location.hostname;
 
 // Helper function to determine if the current page is a product page
@@ -14,102 +13,40 @@ function getCurrentProductId() {
   // This assumes Shopify's standard data structure
   if (window.APP_PAGE_DATA?.productId) return window.APP_PAGE_DATA.productId;
 
-  if (window.meta?.product?.id) {
-    return `${window.meta.product.id}`;
-  }
+  // if (window.meta?.product?.id) {
+  //   return `${window.meta.product.id}`;
+  // }
 
   return null;
 }
 
-// Helper function to get current page ID
 function getCurrentPageId() {
-  // ✅ Prefer APP_PAGE_DATA if available
   if (window.APP_PAGE_DATA?.pageId) return window.APP_PAGE_DATA.pageId;
 
-  if (
-    window.meta &&
-    window.meta.page &&
-    window.meta.page.pageType === "page" &&
-    window.meta.page.resourceId
-  ) {
-    return window.meta.page.resourceId;
-  }
+  // if (
+  //   window.meta &&
+  //   window.meta.page &&
+  //   window.meta.page.pageType === "page" &&
+  //   window.meta.page.resourceId
+  // ) {
+  //   return window.meta.page.resourceId;
+  // }
 
   return null;
 }
-// Fetch only the relevant selected items based on page type
-function fetchSelectedItems() {
-  // Determine if we're on a product page or regular page
-  const isOnProductPage = isProductPage();
-  const dataType = isOnProductPage ? "products" : "pages";
 
-  // Fetch only the data we need based on page type
-  return fetch(
-    `${API_BASE_URL}/api/shop-data?domain=${encodeURIComponent(shopDomain)}&type=${dataType}`,
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      console.error("Error fetching selected items:", error);
-      return isOnProductPage ? { selectedProducts: [] } : { selectedPages: [] };
-    });
-}
-
-// Check if current page/product is in the selected list
-function checkCurrentPage(selections) {
-  // Determine if we're on a product page
-  const isOnProductPage = isProductPage();
-
-  if (isOnProductPage) {
-    // We're on a product page, check if it's selected
-    const productId = getCurrentProductId();
-
-    // Handle the case where selections might be a string or array
-    const selectedProducts = Array.isArray(selections.selectedProducts)
-      ? selections.selectedProducts
-      : typeof selections.selectedProducts === "string"
-        ? selections.selectedProducts.split(",")
-        : [];
-
-    if (selectedProducts.length === 0) {
-      console.log("PageTest.ai - No products selected for testing");
-      return;
+async function fetchSelectedItems(dataType, shopDomain) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/shop-data?domain=${encodeURIComponent(shopDomain)}&type=${dataType}`,
+    );
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
     }
-
-    if (productId && selectedProducts.includes(productId)) {
-      console.log("PageTest.ai - Current product is selected for testing");
-      // Implement your product page testing logic here
-      fetchAndInjectedLatestSnippet();
-    } else {
-      console.log("PageTest.ai - Current product is NOT selected for testing");
-    }
-  } else if (isOnRegularPage()) {
-    // We're on a regular page, check if it's selected
-    const pageId = getCurrentPageId();
-
-    // Handle the case where selections might be a string or array
-    const selectedPages = Array.isArray(selections.selectedPages)
-      ? selections.selectedPages
-      : typeof selections.selectedPages === "string"
-        ? selections.selectedPages.split(",")
-        : [];
-
-    if (selectedPages.length === 0) {
-      console.log("PageTest.ai - No pages selected for testing");
-      return;
-    }
-
-    if (pageId && selectedPages.some((p) => p.includes(pageId))) {
-      console.log("PageTest.ai - Current page is selected for testing");
-      // Implement your page testing logic here
-      fetchAndInjectedLatestSnippet();
-    } else {
-      console.log("PageTest.ai - Current page is NOT selected for testing");
-    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching selected items:", error);
+    return isProductPage() ? { selectedProducts: [] } : { selectedPages: [] };
   }
 }
 
@@ -120,17 +57,39 @@ function isOnRegularPage() {
 // Initialize page testing
 function fetchAndInjectedLatestSnippet() {
   // Your page testing logic here
-  const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
   const script = document.createElement("script");
   script.src = snippetUrl;
   document.body.appendChild(script);
 }
 
-// Main execution
-fetchSelectedItems()
-  .then((selections) => {
-    checkCurrentPage(selections);
-  })
-  .catch((error) => {
-    console.error("PageTest.ai - Error:", error);
-  });
+async function initializePageTestScript() {
+  if (!isOnRegularPage() && !isProductPage()) {
+    console.log("PageTest.ai - Not on a product or regular page");
+    return;
+  }
+
+  const isOnProductPage = isProductPage();
+  const dataType = isOnProductPage ? "products" : "pages";
+  const shopDomain = Shopify.shop || window.location.hostname;
+  const selectedItems = await fetchSelectedItems(dataType, shopDomain);
+  if (selectedItems.length === 0) {
+    console.log("PageTest.ai - No items selected for testing");
+    return;
+  }
+  const currentItemId = isOnProductPage
+    ? getCurrentProductId()
+    : getCurrentPageId();
+
+  if (currentItemId) {
+    if (selectedItems.includes(currentItemId)) {
+      console.log("PageTest.ai - Current item is selected for testing");
+      fetchAndInjectedLatestSnippet();
+    } else {
+      console.log("PageTest.ai - Current item is NOT selected for testing");
+    }
+  } else {
+    console.log("PageTest.ai - Could not determine current item");
+  }
+}
+
+initializePageTestScript();
