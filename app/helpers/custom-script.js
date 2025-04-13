@@ -1,6 +1,6 @@
 // Configuration
 const API_BASE_URL = "process.env.SHOPIFY_APP_URL";
-const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
+const snippetUrl = "https://app.pagetest.ai/build/snippet/latest/ptai.js";
 
 function isProductPage() {
   return (
