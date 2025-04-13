@@ -1,6 +1,5 @@
 import "@shopify/shopify-app-remix/adapters/node";
 import {
-  ApiVersion,
   AppDistribution,
   shopifyApp,
   DeliveryMethod,
@@ -32,10 +31,8 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ admin, session }) => {
       shopify.registerWebhooks({ session });
-      // This is your app install handler
-      const domain = session.shop;
 
-      // Your custom logic here
+      const domain = session.shop;
       await initShopRecordAfterAuth(domain);
       await injectScriptTag(admin, domain);
       console.log(`Shop ${domain} authenticated successfully`);

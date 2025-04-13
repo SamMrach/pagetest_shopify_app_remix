@@ -1,7 +1,6 @@
 // Configuration
-const API_BASE_URL = "${process.env.SHOPIFY_APP_URL}";
+const API_BASE_URL = process.env.SHOPIFY_APP_URL;
 const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
-const shopDomain = Shopify.shop || window.location.hostname;
 
 function isProductPage() {
   return (
@@ -72,15 +71,16 @@ async function initializePageTestScript() {
     ? getCurrentProductId()
     : getCurrentPageId();
 
-  if (currentItemId) {
-    if (selectedItems.includes(currentItemId)) {
-      console.log("PageTest.ai - Current item is selected for testing");
-      fetchAndInjectedLatestSnippet();
-    } else {
-      console.log("PageTest.ai - Current item is NOT selected for testing");
-    }
-  } else {
+  if (!currentItemId) {
     console.log("PageTest.ai - Could not determine current item");
+    return;
+  }
+
+  if (selectedItems.includes(currentItemId)) {
+    console.log("PageTest.ai - Current item is selected for testing");
+    fetchAndInjectedLatestSnippet();
+  } else {
+    console.log("PageTest.ai - Current item is NOT selected for testing");
   }
 }
 

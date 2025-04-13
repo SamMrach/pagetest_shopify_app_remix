@@ -124,6 +124,10 @@ export async function loader({ request }) {
 }
 
 const fetchSelectePagesAndProducts = async (domain) => {
+  if (!domain) {
+    console.log("Domain is not provided");
+    return { selectedPages: [], selectedProducts: [] };
+  }
   try {
     const shop = await prisma.shop.findUnique({
       where: { domain },
@@ -225,8 +229,6 @@ export default function Index() {
     if (authToken) {
       setIsAuthenticated(true);
     }
-    console.log("pages", pages);
-    console.log("products", products);
   }, []);
 
   return (

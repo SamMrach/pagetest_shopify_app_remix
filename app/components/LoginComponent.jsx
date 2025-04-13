@@ -12,7 +12,6 @@ import {
   Text,
 } from "@shopify/polaris";
 import { login } from "../helpers/utils";
-import LogoContainer from "./LogoContainer";
 
 const LoginComponent = ({ onLogin }) => {
   const [email, setEmail] = useState("");
