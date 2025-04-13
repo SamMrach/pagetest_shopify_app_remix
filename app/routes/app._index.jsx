@@ -225,6 +225,8 @@ export default function Index() {
     if (authToken) {
       setIsAuthenticated(true);
     }
+    console.log("pages", pages);
+    console.log("products", products);
   }, []);
 
   return (
