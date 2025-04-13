@@ -4,17 +4,20 @@ const snippetUrl = "https://app.pagetest.ai/build/snippet/ptai.js";
 const shopDomain = Shopify.shop || window.location.hostname;
 
 function isProductPage() {
-  return window.location.pathname.includes("/products/");
+  return (
+    window.APP_PAGE_DATA?.pageType === "product" ||
+    window.location.pathname.includes("/products/")
+  );
 }
 
 function getCurrentProductId() {
-  if (window.APP_PAGE_DATA?.productId) return window.APP_PAGE_DATA.productId;
+  if (window.APP_PAGE_DATA?.resourceId) return window.APP_PAGE_DATA.resourceId;
 
   return null;
 }
 
 function getCurrentPageId() {
-  if (window.APP_PAGE_DATA?.pageId) return window.APP_PAGE_DATA.pageId;
+  if (window.APP_PAGE_DATA?.resourceId) return window.APP_PAGE_DATA.resourceId;
 
   return null;
 }
@@ -35,7 +38,10 @@ async function fetchSelectedItems(dataType, shopDomain) {
 }
 
 function isOnRegularPage() {
-  return window.location.pathname.includes("/pages/");
+  return (
+    window.APP_PAGE_DATA?.pageType === "page" ||
+    window.location.pathname.includes("/pages/")
+  );
 }
 
 function fetchAndInjectedLatestSnippet() {

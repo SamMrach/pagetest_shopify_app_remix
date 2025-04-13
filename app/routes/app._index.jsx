@@ -93,6 +93,13 @@ export async function loader({ request }) {
     fetchAllItems(fetchProducts),
   ]);
 
+  const systemPages = [
+    { id: "home", title: "Home" },
+    { id: "cart", title: "Cart" },
+  ];
+
+  allPages.push(...systemPages);
+
   // Format the data for the component
   const pages = allPages.map((node) => ({
     id: node.id.replace("gid://shopify/Page/", ""),
