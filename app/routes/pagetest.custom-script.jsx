@@ -12,18 +12,20 @@ export function loader() {
 
     // Replace environment variable placeholders
     scriptContent = scriptContent.replace(
-      "${process.env.SHOPIFY_APP_URL}",
+      "process.env.SHOPIFY_APP_URL",
       appUrl,
     );
+
+    const headers = {
+      "Content-Type": "application/javascript",
+      "Cache-Control": "public, max-age=10800",
+      "Access-Control-Allow-Origin": "*",
+    };
 
     // Return the JavaScript content with appropriate headers
     return new globalThis.Response(scriptContent, {
       status: 200,
-      headers: {
-        "Content-Type": "application/javascript",
-        "Cache-Control": "public, max-age=3600",
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers,
     });
   } catch (error) {
     console.error("Error serving script:", error);
