@@ -54,14 +54,16 @@ export async function loader({ request }) {
     );
   }
 
-  let responseData = {};
+  let responseData = { teamId: shop.teamId };
 
   if (dataType === "pages") {
     responseData = {
+      ...responseData,
       selectedPages: shop.selections.selectedPages || [],
     };
   } else if (dataType === "products") {
     responseData = {
+      ...responseData,
       selectedProducts: shop.selections.selectedProducts || [],
     };
   }

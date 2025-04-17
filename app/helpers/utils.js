@@ -24,7 +24,11 @@ api.interceptors.request.use(async (config) => {
 const login = async (email, password) => {
   try {
     const response = await api.post("auth/login", { email, password });
-    return { success: true, token: response.data.token };
+    return {
+      success: true,
+      token: response.data.token,
+      teamId: response.data.teamId,
+    };
   } catch (error) {
     if (error.response?.status === 422) {
       return { success: false, error: error.response.data };

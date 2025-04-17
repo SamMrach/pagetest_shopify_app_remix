@@ -21,7 +21,7 @@ function getCurrentPageId() {
   return null;
 }
 
-async function fetchSelectedItems(dataType, shopDomain) {
+async function fetchShopData(dataType, shopDomain) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/shop-data?domain=${encodeURIComponent(shopDomain)}&type=${dataType}`,
@@ -43,7 +43,12 @@ function isOnRegularPage() {
   );
 }
 
-function fetchAndInjectedLatestSnippet() {
+function injectedTeamIdAndSnippet(teamId) {
+  window.ptaiParams = {
+    ...window.ptaiParams,
+    team: teamId,
+  };
+
   const script = document.createElement("script");
   script.src = snippetUrl;
   document.body.appendChild(script);
@@ -58,7 +63,8 @@ async function initializePageTestScript() {
   const isOnProductPage = isProductPage();
   const dataType = isOnProductPage ? "products" : "pages";
   const shopDomain = Shopify.shop || window.location.hostname;
-  const res = await fetchSelectedItems(dataType, shopDomain);
+  const res = await fetchShopData(dataType, shopDomain);
+  const teamId = res.teamId;
   const selectedItems = isOnProductPage
     ? res.selectedProducts
     : res.selectedPages;
@@ -78,7 +84,7 @@ async function initializePageTestScript() {
 
   if (selectedItems.includes(currentItemId)) {
     console.log("PageTest.ai - Current item is selected for testing");
-    fetchAndInjectedLatestSnippet();
+    injectedTeamIdAndSnippet(teamId);
   } else {
     console.log("PageTest.ai - Current item is NOT selected for testing");
   }

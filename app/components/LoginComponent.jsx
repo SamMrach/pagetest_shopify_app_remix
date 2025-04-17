@@ -38,12 +38,13 @@ const LoginComponent = ({ onLogin }) => {
       const response = {
         success: true,
         token: "your_token_here",
+        teamId: "your_team_id_here",
       };
       if (!response.success) {
         setErrorMessage("Invalid email or password");
         return;
       }
-      onLogin(response.token);
+      onLogin(response.token, response.teamId);
     } catch (err) {
       setErrorMessage(err.message || "Failed to login. Please try again.");
     } finally {

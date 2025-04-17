@@ -144,11 +144,10 @@ const fetchSelectePagesAndProducts = async (domain) => {
   }
 };
 
-const saveSelectedPagesAndProducts = async (
-  domain,
-  selectedPages,
-  selectedProducts,
-) => {
+const saveSelectedPagesAndProducts = async (domain, formData) => {
+  const selectedPages = formData.get("selectedPages").filter(Boolean) || [];
+  const selectedProducts =
+    formData.get("selectedProducts").filter(Boolean) || [];
   try {
     const shop = await prisma.shop.findUnique({
       where: { domain },
@@ -184,39 +183,50 @@ const saveSelectedPagesAndProducts = async (
   }
 };
 
+const saveTeamId = async (domain, teamId) => {
+  try {
+    await prisma.shop.update({
+      where: { domain },
+      data: {
+        teamId,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export async function action({ request }) {
   const { session } = await authenticate.admin(request);
-  const formData = await request.formData();
-  const selectedPages = formData
-    .get("selectedPages")
-    .split(",")
-    .filter(Boolean);
-  const selectedProducts = formData
-    .get("selectedProducts")
-    .split(",")
-    .filter(Boolean);
-
   const domain = session.shop;
 
   if (!domain) {
     return json({ error: "Missing shop domain" }, { status: 400 });
   }
-  const { success, message } = await saveSelectedPagesAndProducts(
-    domain,
-    selectedPages,
-    selectedProducts,
-  );
-  return json({ success, message });
+
+  const formData = await request.formData();
+  const actionType = formData.get("actionType");
+
+  if (actionType === "saveSelecedPagesAndProducts") {
+    return await saveSelectedPagesAndProducts(domain, formData);
+  } else if (actionType === "saveTeamId") {
+    await saveTeamId(domain, formData.get("teamId"));
+    return { success: true, message: "Team ID saved" };
+  }
+
+  return json({ error: "Invalid action type" }, { status: 400 });
 }
 
 export default function Index() {
   const { pages, products, shop, selectedPages, selectedProducts } =
     useLoaderData();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const fetcher = useFetcher();
 
-  const onLogin = (token) => {
+  const onLogin = (token, teamId) => {
     localStorage.setItem("pagetest_authToken", token);
     setIsAuthenticated(true);
+    submitTeamId(teamId);
   };
 
   const onLogout = () => {
@@ -230,6 +240,16 @@ export default function Index() {
       setIsAuthenticated(true);
     }
   }, []);
+
+  const submitTeamId = (teamId) => {
+    fetcher.submit(
+      {
+        actionType: "saveTeamId",
+        teamId,
+      },
+      { method: "post" },
+    );
+  };
 
   return (
     <Page>

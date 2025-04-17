@@ -88,6 +88,7 @@ export default function Dashboard({
     }
     fetcher.submit(
       {
+        actionType: "saveSelecedPagesAndProducts",
         selectedPages: selectedPages,
         selectedProducts: selectedProducts,
       },
