@@ -184,12 +184,12 @@ const saveSelectedPagesAndProducts = async (domain, formData) => {
   }
 };
 
-const saveTeamId = async (domain, teamId) => {
+const saveTeamHash = async (domain, team_hash) => {
   try {
     await prisma.shop.update({
       where: { domain },
       data: {
-        teamId,
+        team_hash,
       },
     });
   } catch (e) {
@@ -210,9 +210,9 @@ export async function action({ request }) {
 
   if (actionType === "saveSelecedPagesAndProducts") {
     return await saveSelectedPagesAndProducts(domain, formData);
-  } else if (actionType === "saveTeamId") {
-    await saveTeamId(domain, formData.get("teamId"));
-    return { success: true, message: "Team ID saved" };
+  } else if (actionType === "saveTeamHash") {
+    await saveTeamHash(domain, formData.get("team_hash"));
+    return { success: true, message: "Team hash saved" };
   }
 
   return json({ error: "Invalid action type" }, { status: 400 });
@@ -224,10 +224,10 @@ export default function Index() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const fetcher = useFetcher();
 
-  const onLogin = (token, teamId) => {
+  const onLogin = (token, team_hash) => {
     localStorage.setItem("pagetest_authToken", token);
     setIsAuthenticated(true);
-    submitTeamId(teamId);
+    submitTeamHash(team_hash);
   };
 
   const onLogout = () => {
@@ -242,11 +242,11 @@ export default function Index() {
     }
   }, []);
 
-  const submitTeamId = (teamId) => {
+  const submitTeamHash = (team_hash) => {
     fetcher.submit(
       {
-        actionType: "saveTeamId",
-        teamId,
+        actionType: "saveTeamHash",
+        team_hash,
       },
       { method: "post" },
     );

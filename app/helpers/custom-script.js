@@ -43,10 +43,10 @@ function isOnRegularPage() {
   );
 }
 
-function injectedTeamIdAndSnippet(teamId) {
+function injectedTeamHashAndSnippet(team_hash) {
   window.ptaiParams = {
     ...window.ptaiParams,
-    team: teamId,
+    team: team_hash,
   };
 
   const script = document.createElement("script");
@@ -81,10 +81,10 @@ async function initializePageTestScript() {
     console.log("PageTest.ai - Could not determine current item");
     return;
   }
-  const teamId = res.teamId;
+  const team_hash = res.team_hash;
   if (selectedItems.includes(currentItemId)) {
     console.log("PageTest.ai - Current item is selected for testing");
-    injectedTeamIdAndSnippet(teamId);
+    injectedTeamHashAndSnippet(team_hash);
   } else {
     console.log("PageTest.ai - Current item is NOT selected for testing");
   }

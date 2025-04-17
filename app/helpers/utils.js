@@ -27,7 +27,7 @@ const login = async (email, password) => {
     return {
       success: true,
       token: response.data.token,
-      teamId: response.data.teamId,
+      team_hash: response.data.team_hash,
     };
   } catch (error) {
     if (error.response?.status === 422) {

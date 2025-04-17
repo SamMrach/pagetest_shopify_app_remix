@@ -39,13 +39,13 @@ const LoginComponent = ({ onLogin }) => {
       // const response = {
       //   success: true,
       //   token: "your_token_here",
-      //   teamId: "your_team_id_here",
+      //   team_hash: "your_team_hash_here",
       // };
       if (!response.success) {
         setErrorMessage("Invalid email or password");
         return;
       }
-      onLogin(response.token, response.teamId);
+      onLogin(response.token, response.team_hash);
     } catch (err) {
       setErrorMessage(err.message || "Failed to login. Please try again.");
     } finally {
