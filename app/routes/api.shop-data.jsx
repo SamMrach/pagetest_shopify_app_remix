@@ -54,7 +54,7 @@ export async function loader({ request }) {
     );
   }
 
-  let responseData = { teamId: shop.team_hash };
+  let responseData = { team_hash: shop.team_hash };
 
   if (dataType === "pages") {
     responseData = {
