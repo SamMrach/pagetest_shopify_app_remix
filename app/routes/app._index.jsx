@@ -145,9 +145,10 @@ const fetchSelectePagesAndProducts = async (domain) => {
 };
 
 const saveSelectedPagesAndProducts = async (domain, formData) => {
-  const selectedPages = formData.get("selectedPages").filter(Boolean) || [];
+  const selectedPages =
+    formData.get("selectedPages").split(",").filter(Boolean) || [];
   const selectedProducts =
-    formData.get("selectedProducts").filter(Boolean) || [];
+    formData.get("selectedProducts").split(",").filter(Boolean) || [];
   try {
     const shop = await prisma.shop.findUnique({
       where: { domain },
