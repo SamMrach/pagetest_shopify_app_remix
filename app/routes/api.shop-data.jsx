@@ -41,8 +41,7 @@ export async function loader({ request }) {
 
   const shop = await prisma.shop.findUnique({
     where: { domain },
-    select: { selections: true },
-    teamId: true,
+    select: { selections: true, teamId: true },
   });
 
   if (!shop) {
