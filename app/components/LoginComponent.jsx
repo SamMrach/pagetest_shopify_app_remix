@@ -34,12 +34,13 @@ const LoginComponent = ({ onLogin }) => {
       setErrorMessage("");
 
       // Make API call to your authentication endpoint
-      //const response = await login(email, password);
-      const response = {
-        success: true,
-        token: "your_token_here",
-        teamId: "your_team_id_here",
-      };
+      const response = await login(email, password);
+      console.log(response);
+      // const response = {
+      //   success: true,
+      //   token: "your_token_here",
+      //   teamId: "your_team_id_here",
+      // };
       if (!response.success) {
         setErrorMessage("Invalid email or password");
         return;

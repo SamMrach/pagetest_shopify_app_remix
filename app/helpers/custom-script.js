@@ -64,7 +64,7 @@ async function initializePageTestScript() {
   const dataType = isOnProductPage ? "products" : "pages";
   const shopDomain = Shopify.shop || window.location.hostname;
   const res = await fetchShopData(dataType, shopDomain);
-  const teamId = res.teamId;
+
   const selectedItems = isOnProductPage
     ? res.selectedProducts
     : res.selectedPages;
@@ -81,7 +81,7 @@ async function initializePageTestScript() {
     console.log("PageTest.ai - Could not determine current item");
     return;
   }
-
+  const teamId = res.teamId;
   if (selectedItems.includes(currentItemId)) {
     console.log("PageTest.ai - Current item is selected for testing");
     injectedTeamIdAndSnippet(teamId);
