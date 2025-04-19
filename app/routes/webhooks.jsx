@@ -1,5 +1,5 @@
 import { authenticate } from "../shopify.server";
-import db from "../db.server";
+import prisma from "../db.server";
 
 export const action = async ({ request }) => {
   const { shop, admin, session, topic } = await authenticate.webhook(request);
@@ -22,7 +22,7 @@ export const action = async ({ request }) => {
         }
 
         // Clean up session data regardless of admin availability
-        await db.session.deleteMany({ where: { shop } });
+        await prisma.session.deleteMany({ where: { shop } });
 
         // Also delete shop data from your custom table
         //await db.shop.deleteMany({ where: { domain: shop } });
