@@ -36,7 +36,7 @@ model Shop {
   id               String   @id @default(cuid())
   domain           String   @unique
   selections       Json     // Store selected pages/products
-  team_hash           String
+  team_hash        String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
