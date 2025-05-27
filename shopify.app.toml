@@ -3,7 +3,7 @@
 client_id = "1fb01d536ad07c3f982ef6a60663c205"
 name = "PageTest.AI"
 handle = "pagetest-ai-1"
-application_url = "https://pagetest-shopify-app-remix-three.vercel.app"
+application_url = "https://pagetest-shopify-app-remix-three.vercel.app/"
 embedded = true
 
 [build]
